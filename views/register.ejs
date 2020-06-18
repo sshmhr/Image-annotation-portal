@@ -1,4 +1,8 @@
 <h1>Register</h1>
+<% if(session && session.error) { %>
+    <%= session.error %>
+    <% session.error = null %>
+<% } %>
 <form action="/register" method="POST">
   <div>
     <label for="name">Name</label>
@@ -12,6 +16,14 @@
     <label for="password">Password</label>
     <input type="password" id="password" name="password" required>
   </div>
+  <br>
+  <label for="userType">Choose a car:</label>
+<select name="userType" id="userType">
+    <option value="userTest">User</option>
+    <option value="adminTest">Admin</option>
+</select>
+<br>
   <button type="submit">Register</button>
 </form>
 <a href="/login">Login</a>
+
