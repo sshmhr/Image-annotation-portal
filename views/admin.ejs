@@ -1,5 +1,29 @@
 Admin
-<h1>hey <%= name %></h1>
-<form action="/logout?_method=DELETE" method="POST">
-<button id="logout" name="logout" type="submit">Logout</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal</title>
+</head>
+<body>
+    <h1>hey <%= name %></h1>
+
+    <% if(session && session.adminMessage) { %>
+        <%= session.adminMessage %>
+        <% session.adminMessage = null %>
+    <% } %>
+
+    <div>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="files" id="files" multiple>
+        <button type="submit">Upload</button>
+        question : <input type="text" id="question" name="question" required>
+        </form>
+    </div>
+
+    <form action="/logout?_method=DELETE" method="POST">
+        <button id="logout" name="logout" type="submit">Logout</button>
+    </form>
+</body>
+</html>

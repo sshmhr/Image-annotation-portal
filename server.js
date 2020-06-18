@@ -11,10 +11,14 @@ const flash = require('express-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
 const assert = require('assert');
-
+const multer = require('multer');
+const bodyParser = require('body-parser');
+const path = require('path');
+const fs = require('fs');
+const MongoClient =  require('mongodb').MongoClient;
 
 const app = express();
-initializePassport(passport);
+
 app.set('view-engine','ejs');
 app.use(express.urlencoded({extended : false}));
 app.use(flash());
@@ -26,7 +30,27 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
+app.use(bodyParser.urlencoded({extended: true}))
 
+initializePassport(passport);
+functionLibrary.initializeMulter();
+
+let upload = variables.upload.array('files',15);
+
+app.post("/upload",async (req,res,next)=>{
+
+    upload(req,res,async (err)=>{
+        try {
+            if(err) throw err;
+            await functionLibrary.addImageToDB(req,res);
+            req.session.adminMessage = "file uploaded successfully ";
+            res.redirect("/admin");
+        } catch (error) {
+            req.session.adminMessage = error.toString() ;
+            res.redirect("/admin");
+        }
+    });
+})
 
 app.get("/",functionLibrary.checkAuthenticated,(req,res)=>{
     if((req.session.passport.user.userType).includes("user")) res.redirect("/user");
@@ -54,7 +78,7 @@ app.get("/user",functionLibrary.checkAuthenticated,functionLibrary.isUser,(req,r
 });
 
 app.get("/admin",functionLibrary.checkAuthenticated,functionLibrary.isAdmin,(req,res)=>{
-    res.render('admin.ejs',{ name: req.user.name });
+    res.render('admin.ejs',{ name: req.user.name , session: req.session});
 });
 
 app.post("/register",functionLibrary.checkNotAuthenticated,async (req,res)=>{

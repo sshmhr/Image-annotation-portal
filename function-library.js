@@ -2,6 +2,61 @@ const variables = require("./variables.js");
 const assert = require('assert');
 const MongoClient =  require('mongodb').MongoClient;
 const client = MongoClient(variables.url);
+const multer = require('multer');
+const bodyParser = require('body-parser');
+const path = require('path');
+const fs = require('fs');
+
+let initializeMulter = ()=>{
+
+    const storage = multer.memoryStorage();
+    let upload = multer({
+        storage: storage,
+        fileFilter: function (req, file, callback) {
+            var ext = path.extname(file.originalname);
+            if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+                return callback(new Error('Only images are allowed'))
+            }
+            callback(null, true)
+        },
+        limits:{
+            fileSize: 1024 * 1024
+        },
+        onError : function(err, next) {
+            console.log(error)
+          }
+    });
+    variables.storage = storage;
+    variables.upload = upload;
+}
+
+let addImageToDB = async (req,res) => {
+    const client = await MongoClient.connect(variables.url);
+    const db = client.db(variables.database);
+
+    const user = req.session.passport.user.email;
+    const question =  req.body.question;
+    let imageList = []
+    req.files.forEach((file)=>{
+        const images = file.buffer;
+        const encoded_image = images.toString('base64');
+        let data = {}
+
+        let finalImage = {
+            contentType: file.mimetype,
+            image: encoded_image,
+            name: file.originalname
+        }
+        data.image = finalImage;
+        data.question = question;
+        data.user = user;
+        imageList.push(data);
+    });
+    if(imageList.length==0) throw("no Image Selected");
+    await db.collection('currentImagesTest').insertMany(imageList);
+    client.close();
+
+}
 
 let storeData = async (hashedPassword,req)=>{
 
@@ -33,21 +88,6 @@ const getUserByEmail = async (userType,userEmail)=>{
     client.close();
     return res[0];
 }
-
-// (async () => {
-//     req  = {
-//         body: {
-//                 name: "ss",
-//                 email: "em",
-//                 userType: "random15"
-//             }
-//     }
-//     console.log(req)
-//     // storeData("password",req)
-//     x = await getUserByEmail("random15","ema");
-//     console.log(typeof x)
-// })();
-
 
 let checkAuthenticated = (req,res,next) => {
     if(req.isAuthenticated()) return next();
@@ -92,4 +132,6 @@ returnValue.addUserTypeUser = addUserTypeUser ;
 returnValue.addUserTypeAdmin = addUserTypeAdmin ;
 returnValue.isAdmin = isAdmin;
 returnValue.isUser = isUser;
+returnValue.initializeMulter = initializeMulter;
+returnValue.addImageToDB = addImageToDB;
 module.exports = returnValue;

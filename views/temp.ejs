@@ -1,0 +1,6 @@
+<% if(imageList) { %>
+    <% imageList.forEach((ele)=>{ %>
+         <img src=<%= "data:" + ele.image.contentType   + ";base64," + ele.image.image %> >
+         <br>
+    <% }) %>
+ <% } %>
