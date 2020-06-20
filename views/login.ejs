@@ -1,12 +1,36 @@
-<h1>Login</h1>
-<% if(messages && messages.error) { %>
-    <%= messages.error %>
-<% } %>
-<form action="/login/user" method="GET">
-    <button type="submit">User Login</button>
-</form>
 
-<form action="/login/admin" method="GET">
-    <button type="submit">Admin Login</button>
-</form>
-  <a href="/register">Register</a>
+  <%- include('partials/loginHeader.ejs') %>
+  <div class="container-login100 m-t-0">
+
+      <div class="login100-pic " >
+        <img src="/images/img-01.png" class="js-tilt" data-tilt>
+
+        <form action="/login/admin" method="GET">
+        <div class="container-login100-form-btn m-t-100">
+          <button type="submit"  class="login100-form-btn">
+           Admin Login
+          </button>
+        </div>
+        </form>
+
+        <form action="/login/user" method="GET">
+            <div class="container-login100-form-btn">
+              <button type="submit"  class="login100-form-btn">
+               User Login
+              </button>
+            </div>
+            </form>
+
+        <form action="/register" method="GET">
+            <div class="container-login100-form-btn">
+              <button type="submit"  class="login100-form-btn">
+                Register
+                <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+              </button>
+            </div>
+            </form>
+
+    </div>
+  </div>
+
+  <%- include('partials/loginFooter.ejs') %>

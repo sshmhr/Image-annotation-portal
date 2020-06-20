@@ -1,43 +1,115 @@
 <%- include('partials/header.ejs') %>
-<h1>hey <%= name %></h1>
 
-<form action="/next" method="post">
-    <button type="submit" <% if(!showNext) { %> <%="disabled" %> <% } %> value="next"> Next </button>
-</form>
+<nav class="deep-purple darken-3">
+    <div class="nav-wrapper" style="padding-left:2.5em;padding-right:2.5em">
+        <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+      <a href="#!" class="brand-logo center"><i class="fa fa-user "></i><%= name.substring(0,20) %></a>
 
-<form action="/previous" method="post">
-    <button type="submit" <% if(!showPrevious) { %> <%="disabled" %> <% } %> value="previous"> Previous </button>
-</form>
+      <ul class="hide-on-med-and-down left">
+          <li>
+            <form action="/previous" method="post">
+                <button type="submit" class = "noStyleButton" <% if(!showPrevious) { %> <%="style=display:none" %> <% } %> style="font-size:1.5em" value="previous"> Previous </button>
+            </form>
+        </li>
+        <li style="padding-left: 1em;">
+            <a style="font-size:1.5em" id="rotateLeft" href="#"><i class="fa fa-undo"> Rotate Left</i></a>
+        </li>
+      </ul>
+      <ul class="hide-on-med-and-down right">
+        <li style="padding-right: 1em;">
+            <a style="font-size:1.5em" id="rotateRight" href="#"><i class="fa fa-repeat"> Rotate Right</i></a>
+        </li>
+        <li>
+            <form action="/next" method="post">
+                <button class = "noStyleButton"  type="submit" <% if(!showNext) { %> <%="style=display:none" %> <% } %> style="font-size:1.5em" value="next"> Next </button>
+            </form>
+        </li>
+            <li>
+                <form action="/logout?_method=DELETE" method="POST">
+                    <button id="logout" name="logout" class = "noStyleButton" style="font-size:1.5em; padding-left:1em" type="submit"><i class="fa fa-sign-out" > Logout </i></button>
+                </form>
+            </li>
+      </ul>
+    </div>
+  </nav>
 
-<form action="/logout?_method=DELETE" method="POST">
-<button id="logout" name="logout" type="submit">Logout</button>
-</form>
+  <ul class="sidenav" id="mobile-demo">
+    <li>
+        <form action="/previous" method="post">
+            <button type="submit" class = "noStyleButton" <% if(!showPrevious) { %> <%="style=display:none" %> <% } %> style="font-size:1.5em;padding-left: 2em" value="previous">  <b>Previous </b></button>
+        </form>
+    </li>
+    <li style="padding-left: 1em;">
+        <a style="font-size:1.5em" id="rotateLeft1" href="#">Rotate Left</a>
+    </li>
+    <li style="padding-left: 1em;">
+        <a style="font-size:1.5em" id="rotateRight1" href="#">Rotate Right</a>
+    </li>
+    <li>
+        <form action="/next" method="post">
+            <button class = "noStyleButton"  type="submit" <% if(!showNext) { %> <%="style=display:none" %> <% } %> style="font-size:1.5em;padding-left: 2em" value="next"> <b> Next </b></button>
+        </form>
+    </li>
+        <li>
+            <form action="/logout?_method=DELETE" method="POST">
+                <button id="logout" name="logout" class = "noStyleButton" style="font-size:1.5em; padding-left:2em" type="submit"> <b> Logout </b></button>
+            </form>
+        </li>
+  </ul>
+<div class="container">
 
-<% if(image && image.image) { %>
-<div><%= image.image.name %></div>
-<img id="image" src=<%= "data:" + image.image.contentType   + ";base64," + image.image.image %> >
-<button id="rotateRight"> Rotate Right </button>
-<button id="rotateLeft"> Rotate Left</button>
-<form action="/imageAnnotated" method="post">
-<div><%= image.question %></div>
-<br>
-<hr>
+    <!-- <h1>hey <%= name %></h1> -->
 
-<input type="hidden" id="rotateCount" name="rotateCount" value="0">
-<button type="submit" value="submitAnnotation">Save</button>
+    <% if(image && image.image) { %>
 
-<div class="input-field col s12">
-    <select name="answer">
-      <option value="yes">Yes</option>
-      <option value="no">No</option>
-    </select>
-    <label>Select An Answer</label>
+        <div id="moveDown" class="row">
+                <div class="imageWrapper">
+              <div class="card">
+                <div class="card-image">
+
+                        <img id="image" src=<%= "data:" + image.image.contentType   + ";base64," + image.image.image %> >
+
+                  <span class="card-title" style="font-size: small;"><%= image.image.name %></span>
+                </div>
+                <div class="card-content">
+                  <div> <b>Question : </b></div>
+                  <p><%= image.question %></p>
+                </div>
+                <div class="card-action">
+                    <form action="/imageAnnotated" method="post">
+                        <div class="input-field col s12">
+                            <select name="answer">
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                            </select>
+                        </div>
+
+                        <input type="hidden" id="rotateCount" name="rotateCount" value="0">
+                        <button class="btn waves-effect waves-light btn-large" type="submit" value="submitAnnotation">Save</button>
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+    <% }else{ %>
+        <div style="width:50%;margin:auto"  class="row">
+            <div class="col imageWrapper s6 m6">
+              <div class="card blue-grey darken-1">
+                <div class="card-content white-text">
+                  <span class="card-title">No Image ...</span>
+                  <p>Sorry!!. It seems like there is no image left to annotate. Please Comme back another time</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script>
+              document.getElementById("rotateRight").style.display = "none";
+              document.getElementById("rotateLeft").style.display = "none";
+              document.getElementById("rotateRight1").style.display = "none";
+              document.getElementById("rotateLeft1").style.display = "none";
+          </script>
+    <% } %>
 </div>
-
-</form>
-
-<% }else{ %>
-    No Image present to annotate, click on reload to get the latest data .
-<% } %>
-
 <%- include('partials/footer.ejs') %>
