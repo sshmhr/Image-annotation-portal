@@ -1,12 +1,6 @@
-Admin
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal</title>
-</head>
-<body>
+
+<%- include('partials/header.ejs') %>
+
     <h1>hey <%= name %></h1>
 
     <% if(session && session.adminMessage) { %>
@@ -25,5 +19,11 @@ Admin
     <form action="/logout?_method=DELETE" method="POST">
         <button id="logout" name="logout" type="submit">Logout</button>
     </form>
-</body>
-</html>
+
+    <div>
+        <form action="/viewData" method="post"></form>
+
+            <% if(session.data)
+
+    </div>
+<%- include('partials/footer.ejs') %>

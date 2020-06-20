@@ -1,8 +1,12 @@
 let url = "mongodb://localhost:27017";
 let database = "hyperverge";
+let images = [];
 let vars = {};
 vars.url = url;
 vars.database = database;
 vars.upload = null;
 vars.storage = null;
+vars.images = images;
+vars.currentImagesDB = "currentimages";
+vars.annotatedImagesDB = "annotatedimages";
 module.exports = vars;

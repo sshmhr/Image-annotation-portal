@@ -1,6 +1,7 @@
 const variables = require("./variables.js");
 const assert = require('assert');
-const MongoClient =  require('mongodb').MongoClient;
+const mongo = require('mongodb');
+const MongoClient = mongo.MongoClient;
 const client = MongoClient(variables.url);
 const multer = require('multer');
 const bodyParser = require('body-parser');
@@ -53,7 +54,8 @@ let addImageToDB = async (req,res) => {
         imageList.push(data);
     });
     if(imageList.length==0) throw("no Image Selected");
-    await db.collection('currentImagesTest').insertMany(imageList);
+    await db.collection(variables.currentImagesDB).insertMany(imageList);
+    await populateImageList(variables.currentImagesDB);
     client.close();
 
 }
@@ -78,6 +80,42 @@ let insertIntoDatabase = async (userType,data)=>{
     client.close();
 }
 
+let populateImageList = async (imageCollection)=>{
+    let client = await MongoClient.connect(variables.url);
+    let db = client.db(variables.database);
+    let res = await db.collection(imageCollection).find({}).toArray();
+    variables.images = res;
+    client.close();
+}
+
+
+let transferData = async (imageCollection,req)=>{
+        let client = await MongoClient.connect(variables.url);
+        let db = client.db(variables.database);
+        await db.collection(imageCollection).deleteOne({_id : new mongo.ObjectId(req.session.imageData._id)});
+        rotateAndInsert(req,client,db);
+        await populateImageList(imageCollection);
+
+}
+
+let rotateAndInsert = async(req,client,db)=>{
+    let data = req.session.imageData;
+    data.answer = req.body.answer;
+    data.annotatedby = req.session.email;
+    data.name = req.user.name;
+
+    let Jimp = require('jimp');
+    const base64str =data.image.image;
+    const buf = Buffer.from(base64str, 'base64');
+    const image = await Jimp.read(buf);
+
+    image.rotate(Number(req.body.rotateCount)).getBase64(Jimp.AUTO, function (err, src) {
+        if(!err)
+        data.image.image = src;
+    })
+    db.collection(variables.annotatedImagesDB).insertOne(data);
+    client.close();
+}
 
 const getUserByEmail = async (userType,userEmail)=>{
     const client = await MongoClient.connect(variables.url);
@@ -112,7 +150,6 @@ let isUser = (req,res,next)=>{
     res.redirect("/admin");
 }
 
-
 let addUserTypeAdmin = (req,res,next) => {
     req.body.userType = "adminTest";
     return next();
@@ -122,6 +159,7 @@ let addUserTypeUser = (req,res,next) => {
     req.body.userType = "userTest";
     return next();
 }
+
 
 returnValue = {};
 returnValue.storeData = storeData;
@@ -134,4 +172,6 @@ returnValue.isAdmin = isAdmin;
 returnValue.isUser = isUser;
 returnValue.initializeMulter = initializeMulter;
 returnValue.addImageToDB = addImageToDB;
+returnValue.populateImageList = populateImageList ;
+returnValue.transferData = transferData;
 module.exports = returnValue;

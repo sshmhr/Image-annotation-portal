@@ -1,5 +1,43 @@
-User
+<%- include('partials/header.ejs') %>
 <h1>hey <%= name %></h1>
+
+<form action="/next" method="post">
+    <button type="submit" <% if(!showNext) { %> <%="disabled" %> <% } %> value="next"> Next </button>
+</form>
+
+<form action="/previous" method="post">
+    <button type="submit" <% if(!showPrevious) { %> <%="disabled" %> <% } %> value="previous"> Previous </button>
+</form>
+
 <form action="/logout?_method=DELETE" method="POST">
 <button id="logout" name="logout" type="submit">Logout</button>
 </form>
+
+<% if(image && image.image) { %>
+<div><%= image.image.name %></div>
+<img id="image" src=<%= "data:" + image.image.contentType   + ";base64," + image.image.image %> >
+<button id="rotateRight"> Rotate Right </button>
+<button id="rotateLeft"> Rotate Left</button>
+<form action="/imageAnnotated" method="post">
+<div><%= image.question %></div>
+<br>
+<hr>
+
+<input type="hidden" id="rotateCount" name="rotateCount" value="0">
+<button type="submit" value="submitAnnotation">Save</button>
+
+<div class="input-field col s12">
+    <select name="answer">
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+    <label>Select An Answer</label>
+</div>
+
+</form>
+
+<% }else{ %>
+    No Image present to annotate, click on reload to get the latest data .
+<% } %>
+
+<%- include('partials/footer.ejs') %>

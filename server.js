@@ -18,8 +18,9 @@ const fs = require('fs');
 const MongoClient =  require('mongodb').MongoClient;
 
 const app = express();
-
+console.log(path.join(__dirname,'/public'))
 app.set('view-engine','ejs');
+
 app.use(express.urlencoded({extended : false}));
 app.use(flash());
 app.use(session({
@@ -31,14 +32,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}))
+app.use(express.static(path.join(__dirname,'/public')));
 
 initializePassport(passport);
 functionLibrary.initializeMulter();
+functionLibrary.populateImageList(variables.currentImagesDB);
 
 let upload = variables.upload.array('files',15);
 
 app.post("/upload",async (req,res,next)=>{
-
     upload(req,res,async (err)=>{
         try {
             if(err) throw err;
@@ -73,13 +75,52 @@ app.get("/register",functionLibrary.checkNotAuthenticated,(req,res)=>{
     res.render('register.ejs',{ session: req.session });
 });
 
+app.post("/next",(req,res)=>{
+    req.session.imageIndex++;
+    res.redirect("/user");
+})
+
+app.post("/previous",(req,res)=>{
+    req.session.imageIndex--;
+    res.redirect("/user");
+})
+
 app.get("/user",functionLibrary.checkAuthenticated,functionLibrary.isUser,(req,res)=>{
-    res.render('user.ejs',{ name: req.user.name });
+    if(!req.session.imageIndex)req.session.imageIndex = 0 ;
+    req.session.showNext = true;
+    req.session.showPrevious = true;
+
+    if(req.session.imageIndex>=variables.images.length-1){
+        req.session.imageIndex = variables.images.length - 1 ;
+
+        req.session.showNext = false;
+    }
+
+    if(req.session.imageIndex<=0){
+        req.session.imageIndex = 0 ;
+        req.session.showPrevious = false;
+    }
+
+    let image = variables.images[req.session.imageIndex];
+    req.session.imageData = image ;
+    res.render('user.ejs',
+        {   name: req.user.name ,
+            image: image ,
+            componentToDisable: req.session.componentToDisable ,
+            showNext: req.session.showNext ,
+            showPrevious: req.session.showPrevious
+        }
+    );
 });
 
 app.get("/admin",functionLibrary.checkAuthenticated,functionLibrary.isAdmin,(req,res)=>{
     res.render('admin.ejs',{ name: req.user.name , session: req.session});
 });
+
+app.post("/imageAnnotated",async (req,res)=>{
+    await functionLibrary.transferData(variables.currentImagesDB,req);
+    res.redirect("/user");
+})
 
 app.post("/register",functionLibrary.checkNotAuthenticated,async (req,res)=>{
     try {
