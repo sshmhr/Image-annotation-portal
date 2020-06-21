@@ -2,9 +2,10 @@
   "name": "hyperverge",
   "version": "1.0.0",
   "description": "Hyperverge recruitment project for fullstack developer frontend",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "startServer": "nodemon server.js"
+    "start": "nodemon app.js",
+    "startServer": "nodemon app.js"
   },
   "author": "suyash mehra",
   "license": "ISC",
