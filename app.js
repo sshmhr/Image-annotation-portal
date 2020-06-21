@@ -57,7 +57,7 @@ app.get("/",functionLibrary.checkAuthenticated,(req,res)=>{
 });
 
 app.get("/login",functionLibrary.checkNotAuthenticated,(req,res)=>{
-    res.render('login.ejs');
+    res.render('login.ejs',{session:req.session});
 });
 
 app.get("/login/user",functionLibrary.checkNotAuthenticated,(req,res)=>{
@@ -124,6 +124,7 @@ app.post("/register",functionLibrary.checkNotAuthenticated,async (req,res)=>{
         const hashedPassword = await bcrypt.hash(req.body.password,10);
         existingUser = await functionLibrary.getUserByEmail(req.body.userType,req.body.email);
         if(existingUser!=undefined) throw "User with this email already exists";
+        req.session.successMessage = "You have been registered successfully, Please login to begin"
         await functionLibrary.storeData(hashedPassword,req);
         res.redirect("/login");
     } catch (error) {

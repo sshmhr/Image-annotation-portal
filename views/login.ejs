@@ -5,8 +5,17 @@
       <div class="login100-pic " >
         <img src="/images/img-01.png" class="js-tilt" data-tilt>
 
+        <div class="text-center p-t-22 m-t-10">
+          <% if(session && session.successMessage) { %>
+          <span class="txt2" style="color:#f2f2f2;">
+            <%= session.successMessage.toString() %>
+          </span>
+          <% session.successMessage = null %>
+          <% } %>
+        </div>
+
         <form action="/login/admin" method="GET">
-        <div class="container-login100-form-btn m-t-100">
+        <div class="container-login100-form-btn m-t-80">
           <button type="submit"  class="login100-form-btn">
            Admin Login
           </button>
