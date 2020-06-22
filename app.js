@@ -119,6 +119,19 @@ app.post("/imageAnnotated",async (req,res)=>{
     res.redirect("/user");
 })
 
+app.post("/getAnnotatedDataWithImage",async (req,res)=>{
+    let annotatedData = await functionLibrary.getAnnotatedData();
+    res.send(annotatedData);
+})
+
+app.post("/getAnnotatedData",async (req,res)=>{
+    let annotatedData = await functionLibrary.getAnnotatedData();
+    annotatedData.forEach((ele)=>{
+        delete ele.image.image;
+    });
+    res.send(annotatedData);
+})
+
 app.post("/register",functionLibrary.checkNotAuthenticated,async (req,res)=>{
     try {
         const hashedPassword = await bcrypt.hash(req.body.password,10);

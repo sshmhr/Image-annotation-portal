@@ -14,7 +14,7 @@ let initializeMulter = ()=>{
     let upload = multer({
         storage: storage,
         fileFilter: function (req, file, callback) {
-            var ext = path.extname(file.originalname).toLowerCase();
+            var ext = path.extname(file.originalname);
             if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
                 return callback(new Error('Only images are allowed'))
             }
@@ -101,7 +101,7 @@ let transferData = async (imageCollection,req)=>{
 let rotateAndInsert = async(req,client,db)=>{
     let data = req.session.imageData;
     data.answer = req.body.answer;
-    data.annotatedby = req.session.email;
+    data.annotatedby = req.session.passport.user.email;
     data.name = req.user.name;
 
     let Jimp = require('jimp');
@@ -115,6 +115,16 @@ let rotateAndInsert = async(req,client,db)=>{
     })
     db.collection(variables.annotatedImagesDB).insertOne(data);
     client.close();
+}
+
+let getAnnotatedData = async ()=>{
+    const client = await MongoClient.connect(variables.url);
+    const db = client.db(variables.database);
+    const query = {};
+    const col = db.collection(variables.annotatedImagesDB).find(query);
+    const res =  await col.toArray();
+    client.close();
+    return res;
 }
 
 const getUserByEmail = async (userType,userEmail)=>{
@@ -174,4 +184,5 @@ returnValue.initializeMulter = initializeMulter;
 returnValue.addImageToDB = addImageToDB;
 returnValue.populateImageList = populateImageList ;
 returnValue.transferData = transferData;
-module.exports = returnValue;
+returnValue.getAnnotatedData = getAnnotatedData;
+module.exports = returnValue
