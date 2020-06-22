@@ -35,10 +35,30 @@ of images for annotation.
 1. If an image is annotated by a user, none of the other users will be able to see it on their dashboards.
 1. One image can only be annotated by 1 user.
 1. Image can be rotated both clockwise and anticlockwise, On hitting save after rotation, Annotated Images will contain the rotated image.
+1. The annotated image data can be seen using the following postman collection.  
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/58de0b39df70a7a3c113)
+
+### Postman Collection Details :
+The postman collection comprises of 2 requests:
+1. POST request to http://hyperverge.herokuapp.com/getAnnotatedDataWithImage - This will return a JSON containing
+    * Admin who uploaded the image.
+    * User who annotated the image
+    * The Question and its answer
+    * Image Details like title
+    * The actual image
+2. POST request to http://hyperverge.herokuapp.com/getAnnotatedData - This will return the same data as that of the above request but will not contain the actual image.
 
 ### The following software modules were used to create this portal
 * MongoDB, NodeJS, Express, Multer, Passportjs, ejs, Jimp
 * HTML, CSS, JavaScript, Materialize CSS
+
+### Codebase details
+The main code is divided between :
+1. app.js: main nodejs-express server, contains all the routes.
+1. function-library.js: contains all the helper functions called by the app.js
+1. variables.js: contains the static variables like url's and database name
+1. public/ :  contains the css and the client side javascript along with downloadable css and javascript files for vendors like bootstrap and materialize css.
+1. views/ : contains the main .ejs files for the website, it also has a header and a footer subdirectory
 
 ### Future Plans
 * Currently the annotated images are just stored in a database, a new page can be added to display the results.
