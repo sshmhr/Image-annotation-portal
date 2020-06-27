@@ -1,12 +1,10 @@
 const variables = require("./variables.js");
-const assert = require('assert');
 const mongo = require('mongodb');
 const MongoClient = mongo.MongoClient;
 const client = MongoClient(variables.url);
 const multer = require('multer');
 const bodyParser = require('body-parser');
 const path = require('path');
-const fs = require('fs');
 
 let initializeMulter = ()=>{
 
