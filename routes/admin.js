@@ -8,7 +8,7 @@ router.get("/admin",functionLibrary.checkAuthenticated,functionLibrary.isAdmin,(
 });
 
 
-router.post("/upload",async (req,res,next)=>{
+router.post("/upload",functionLibrary.checkAuthenticated,functionLibrary.isAdmin,async (req,res,next)=>{
     let upload = await variables.upload.array('files',15);
     upload(req,res,async (err)=>{
         try {

@@ -3,12 +3,12 @@ let router = express.Router();
 const functionLibrary = require("../function-library");
 const variables = require("../variables");
 
-router.post("/next",(req,res)=>{
+router.post("/next",functionLibrary.checkAuthenticated,functionLibrary.isUser,(req,res)=>{
     req.session.imageIndex++;
     res.redirect("/user");
 })
 
-router.post("/previous",(req,res)=>{
+router.post("/previous",functionLibrary.checkAuthenticated,functionLibrary.isUser,(req,res)=>{
     req.session.imageIndex--;
     res.redirect("/user");
 })
@@ -42,7 +42,7 @@ router.get("/user",functionLibrary.checkAuthenticated,functionLibrary.isUser,(re
 });
 
 
-router.post("/imageAnnotated",async (req,res)=>{
+router.post("/imageAnnotated",functionLibrary.checkAuthenticated,functionLibrary.isUser,async (req,res)=>{
     await functionLibrary.transferData(variables.currentImagesDB,req);
     res.redirect("/user");
 })
