@@ -1,4 +1,4 @@
-# Hyperverge Project
+# Image annotation Project
 This document has 2 parts, the first part describes how to run the project while the second part is a summary of the basic workflow and the technologies used to create this website.
 This is a Portal for Data Annotators to annotate images along with an admin portal to upload a batch
 of images for annotation.
